@@ -13,4 +13,4 @@
 
 bin/*
 
-secret/*
+k8/secret.yaml

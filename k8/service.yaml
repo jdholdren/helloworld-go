@@ -9,13 +9,13 @@ spec:
       build:
         source:
           git:
-            url: https://github.com/jdholdren/helloworld-go
+            url: https://github.com/jdholdren/helloworld-go.git
             revision: master
         template:
           name: kaniko
           arguments:
           - name: IMAGE
-            value: &image docker.io/jdholdren/app-from-source:latest
+            value: &image docker.io/jdholdren/helloworld-go:latest
       revisionTemplate:
         spec:
           container:

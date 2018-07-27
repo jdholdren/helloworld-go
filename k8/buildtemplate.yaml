@@ -1,0 +1,17 @@
+apiVersion: build.knative.dev/v1alpha1
+kind: Build
+metadata:
+  name: test-build-with-serviceaccount-git-ssh
+  labels:
+    expect: succeeded
+spec:
+  source:
+    git:
+      url: https://github.com/jdholdren/helloworld.git
+      revision: master
+
+  steps:
+  - name: config
+    image: ubuntu
+    command: ["/bin/bash"]
+    args: ["-c", "cat README.md"]
