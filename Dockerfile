@@ -1,11 +1,13 @@
-FROM iron/go
+FROM golang:1.10.1
+WORKDIR /go/src/github.com/jdholdren/helloworld-go/
+COPY . .
+RUN CGO_ENABLED=0 GOOS=linux go build -v -o app
 
-WORKDIR /app
-
-ADD bin/helloworld-go /app/
+FROM scratch
 
 # Document that the service listens on port 8080.
 EXPOSE 8080
 
-# Run the helloworld command by default when the container starts.
-ENTRYPOINT ["./helloworld-go"]
+COPY --from=0 /go/src/github.com/jdholdren/helloworld-go/app .
+
+ENTRYPOINT ["/app"]
