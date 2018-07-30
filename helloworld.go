@@ -1,26 +1,37 @@
 package main
 
 import (
-	"flag"
 	"fmt"
 	"log"
 	"net/http"
 	"os"
+
+	"github.com/ashwanthkumar/slack-go-webhook"
+)
+
+const (
+	urlName = "SLACK_URL"
 )
 
 func handler(w http.ResponseWriter, r *http.Request) {
-	log.Print("Hello world received a request.")
-	target := os.Getenv("TARGET")
-	if target == "" {
-		target = "NOT SPECIFIED"
+	webHookURL := os.Getenv(urlName)
+	msg := "Hello, world!"
+
+	payload := slack.Payload{
+		Text:      msg,
+		Username:  "robot",
+		Channel:   "#general",
+		IconEmoji: ":monkey_face:",
 	}
-	fmt.Fprintf(w, "Hello World, third container: %s!\n", target)
+
+	// Send
+	err := slack.Send(webHookURL, "", payload)
+	if len(err) > 0 {
+		fmt.Printf("error: %s\n", err)
+	}
 }
 
 func main() {
-	flag.Parse()
-	log.Print("Hello world sample started.")
-
 	http.HandleFunc("/", handler)
-	http.ListenAndServe(":8080", nil)
+	log.Fatal(http.ListenAndServe(":8080", nil))
 }

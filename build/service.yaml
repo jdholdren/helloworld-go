@@ -22,3 +22,9 @@ spec:
           container:
             image: *image
             imagePullPolicy: Always
+            env:
+            - name: SLACK_URL
+              valueFrom:
+                secretKeyRef:
+                  name: slack-webhook
+                  key: url

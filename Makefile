@@ -3,16 +3,19 @@
 PWD=$(shell pwd)
 SRC=${PWD}
 
+# For tagging a particular release
+TAG?=$(shell git rev-list HEAD --max-count=1 --abbrev-commit)
+
 D_NAME=helloworld-go
 
 pack: iron-build
-	docker build -t docker.io/jdholdren/helloworld-go .
+	docker build -t docker.io/jdholdren/helloworld-go:$(TAG) .
 
 ship: pack
-	docker push docker.io/jdholdren/helloworld-go
+	docker push docker.io/jdholdren/helloworld-go:$(TAG)
 
 run:
-	docker run -d -p 8888:8080 --rm -e TARGET=foobar --name ${D_NAME} docker.io/jdholdren/helloworld-go
+	docker run -d -p 8888:8080 --rm -e TARGET=foobar --name ${D_NAME} docker.io/jdholdren/helloworld-go:$(TAG)
 
 stop:
 	docker stop ${D_NAME}
