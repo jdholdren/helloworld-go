@@ -3,6 +3,7 @@ package main
 import (
 	"bytes"
 	"encoding/json"
+	"errors"
 	"io/ioutil"
 	"log"
 	"net/http"
@@ -15,6 +16,11 @@ const (
 
 func handler(w http.ResponseWriter, r *http.Request) {
 	webHookURL := os.Getenv(urlName)
+	if webHookURL == "" {
+		writeError(errors.New("Webhook url is not defined"), w)
+		return
+	}
+
 	msg := "Hello, world!"
 
 	body := struct {
