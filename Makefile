@@ -22,3 +22,7 @@ stop:
 
 iron-build:
 	docker run --rm -v "${PWD}":"${SRC}" -w "${SRC}" iron/go:dev go build -o bin/helloworld-go
+
+linux:
+	mkdir -p bin
+	CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo -o bin/service .
