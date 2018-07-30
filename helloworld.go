@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"log"
 	"net/http"
 	"os"
@@ -27,8 +26,14 @@ func handler(w http.ResponseWriter, r *http.Request) {
 	// Send
 	err := slack.Send(webHookURL, "", payload)
 	if len(err) > 0 {
-		fmt.Printf("error: %s\n", err)
+		log.Printf("error: %s\n", err)
+		w.WriteHeader(500)
+		w.Write([]byte("Error occurred"))
+		return
 	}
+
+	w.WriteHeader(200)
+	w.Write([]byte("Successful"))
 }
 
 func main() {
