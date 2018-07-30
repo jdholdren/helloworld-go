@@ -21,7 +21,7 @@ func handler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	msg := "Hello, world!"
+	msg := "http://thecatapi.com/api/images/get?format=src"
 
 	body := struct {
 		Text string `json:"text"`
