@@ -1,11 +1,12 @@
 package main
 
 import (
+	"bytes"
+	"encoding/json"
+	"io/ioutil"
 	"log"
 	"net/http"
 	"os"
-
-	"github.com/ashwanthkumar/slack-go-webhook"
 )
 
 const (
@@ -16,27 +17,54 @@ func handler(w http.ResponseWriter, r *http.Request) {
 	webHookURL := os.Getenv(urlName)
 	msg := "Hello, world!"
 
-	payload := slack.Payload{
-		Text:      msg,
-		Username:  "robot",
-		Channel:   "#general",
-		IconEmoji: ":monkey_face:",
+	body := struct {
+		Text string `json:"text"`
+	}{
+		Text: msg,
 	}
 
-	// Send
-	err := slack.Send(webHookURL, "", payload)
-	if len(err) > 0 {
-		log.Printf("error: %s\n", err)
-		w.WriteHeader(500)
-		w.Write([]byte("Error occurred"))
+	// Marshall the body to json
+	bBytes, err := json.Marshal(body)
+	if err != nil {
+		writeError(err, w)
 		return
 	}
 
+	// Make the request
+	req, err := http.NewRequest("POST", webHookURL, bytes.NewBuffer(bBytes))
+	if err != nil {
+		writeError(err, w)
+		return
+	}
+
+	req.Header.Set("Content-Type", "application/json")
+
+	// Open the client and execute the request
+	client := &http.Client{}
+	resp, err := client.Do(req)
+	if err != nil {
+		writeError(err, w)
+		return
+	}
+	defer resp.Body.Close()
+
+	rBody, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		writeError(err, w)
+		return
+	}
+
+	// Successful request
 	w.WriteHeader(200)
-	w.Write([]byte("Successful"))
+	w.Write(rBody)
 }
 
 func main() {
 	http.HandleFunc("/", handler)
 	log.Fatal(http.ListenAndServe(":8080", nil))
+}
+
+func writeError(err error, w http.ResponseWriter) {
+	w.WriteHeader(500)
+	w.Write([]byte(err.Error()))
 }

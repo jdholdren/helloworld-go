@@ -23,12 +23,3 @@
 #   non-go = false
 #   go-tests = true
 #   unused-packages = true
-
-
-[[constraint]]
-  name = "github.com/ashwanthkumar/slack-go-webhook"
-  version = "0.2.0"
-
-[prune]
-  go-tests = true
-  unused-packages = true
